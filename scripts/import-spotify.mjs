@@ -7,14 +7,68 @@ const db = new Client({
 });
 
 const SEARCH_TERMS = [
-  "pop", "rock", "hip hop", "samba", "funk brasil",
-  "sertanejo", "jazz", "soul", "reggae", "electronic",
-  "taylor swift", "beyonce", "beatles", "michael jackson",
-  "anitta", "roberto carlos", "ivete sangalo", "caetano veloso",
-  "adele", "ed sheeran", "drake", "rihanna", "eminem",
-  "madonna", "nirvana", "queen", "coldplay", "the weeknd",
-  "bad bunny", "j balvin", "shakira", "gloria gaynor",
-  "bon jovi", "ac dc", "guns n roses", "metallica",
+  { term: "taylor swift", genre: "Pop" },
+  { term: "beyonce pop", genre: "Pop" },
+  { term: "ariana grande", genre: "Pop" },
+  { term: "lady gaga", genre: "Pop" },
+  { term: "katy perry", genre: "Pop" },
+  { term: "adele", genre: "Pop" },
+  { term: "ed sheeran", genre: "Pop" },
+  { term: "justin bieber", genre: "Pop" },
+  { term: "rihanna", genre: "Pop" },
+  { term: "madonna", genre: "Pop" },
+  { term: "nirvana", genre: "Rock" },
+  { term: "queen rock", genre: "Rock" },
+  { term: "coldplay", genre: "Rock" },
+  { term: "bon jovi", genre: "Rock" },
+  { term: "ac dc", genre: "Rock" },
+  { term: "guns n roses", genre: "Rock" },
+  { term: "metallica", genre: "Rock" },
+  { term: "beatles", genre: "Rock" },
+  { term: "red hot chili peppers", genre: "Rock" },
+  { term: "foo fighters", genre: "Rock" },
+  { term: "drake", genre: "Hip-Hop/Rap" },
+  { term: "eminem", genre: "Hip-Hop/Rap" },
+  { term: "kanye west", genre: "Hip-Hop/Rap" },
+  { term: "kendrick lamar", genre: "Hip-Hop/Rap" },
+  { term: "jay z", genre: "Hip-Hop/Rap" },
+  { term: "cardi b", genre: "Hip-Hop/Rap" },
+  { term: "nicki minaj", genre: "Hip-Hop/Rap" },
+  { term: "lil wayne rap", genre: "Hip-Hop/Rap" },
+  { term: "the weeknd rnb", genre: "R&B/Soul" },
+  { term: "frank ocean", genre: "R&B/Soul" },
+  { term: "usher", genre: "R&B/Soul" },
+  { term: "alicia keys", genre: "R&B/Soul" },
+  { term: "marvin gaye soul", genre: "R&B/Soul" },
+  { term: "michael jackson", genre: "R&B/Soul" },
+  { term: "anitta", genre: "MPB" },
+  { term: "ivete sangalo", genre: "MPB" },
+  { term: "caetano veloso", genre: "MPB" },
+  { term: "roberto carlos", genre: "MPB" },
+  { term: "gilberto gil", genre: "MPB" },
+  { term: "maria bethania", genre: "MPB" },
+  { term: "tim maia", genre: "MPB" },
+  { term: "djavan", genre: "MPB" },
+  { term: "zeze di camargo sertanejo", genre: "Sertanejo" },
+  { term: "gusttavo lima", genre: "Sertanejo" },
+  { term: "luan santana", genre: "Sertanejo" },
+  { term: "marilia mendonca", genre: "Sertanejo" },
+  { term: "jorge mateus", genre: "Sertanejo" },
+  { term: "daft punk", genre: "Electronic" },
+  { term: "david guetta", genre: "Electronic" },
+  { term: "calvin harris", genre: "Electronic" },
+  { term: "deadmau5", genre: "Electronic" },
+  { term: "bob marley", genre: "Reggae" },
+  { term: "reggae hits", genre: "Reggae" },
+  { term: "bts kpop", genre: "K-Pop" },
+  { term: "blackpink", genre: "K-Pop" },
+  { term: "twice kpop", genre: "K-Pop" },
+  { term: "forro hits", genre: "Forró" },
+  { term: "wesley safadao", genre: "Forró" },
+  { term: "bad bunny", genre: "Pop" },
+  { term: "shakira", genre: "Pop" },
+  { term: "gloria gaynor", genre: "R&B/Soul" },
+  { term: "j balvin", genre: "Pop" },
 ];
 
 function slugify(text) {
@@ -51,7 +105,7 @@ async function searchDeezer(term) {
   }
 }
 
-async function importTracks(tracks) {
+async function importTracks(tracks, genre = "") {
   let count = 0;
   for (const track of tracks) {
     try {
@@ -92,10 +146,11 @@ async function importTracks(tracks) {
       // Inserir música
       await db.query(
         `INSERT INTO public.songs (title, artist_id, album_id, audio_url, deezer_id, preview_start, duration, genres, popularity, is_active)
-         VALUES ($1, $2, $3, $4, $5, 0, 30, '{}', $6, true)
+         VALUES ($1, $2, $3, $4, $5, 0, 30, $6, $7, true)
          ON CONFLICT DO NOTHING`,
         [
           trackName, artistId, albumId, previewUrl, deezerId,
+          genre ? [genre] : [],
           Math.min(100, Math.max(30, Math.round((track.rank ?? 50000) / 10000))),
         ]
       );
@@ -147,11 +202,11 @@ async function main() {
   console.log("✅ Deezer funcionando!\n");
 
   let total = 0;
-  for (const term of SEARCH_TERMS) {
-    console.log(`\n📋 Buscando: "${term}"...`);
+  for (const { term, genre } of SEARCH_TERMS) {
+    console.log(`\n📋 [${genre}] Buscando: "${term}"...`);
     const tracks = await searchDeezer(term);
     if (tracks.length > 0) {
-      const count = await importTracks(tracks);
+      const count = await importTracks(tracks, genre);
       total += count;
     }
     await new Promise((r) => setTimeout(r, 500));
