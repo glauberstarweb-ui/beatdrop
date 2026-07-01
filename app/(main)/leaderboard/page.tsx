@@ -1,83 +1,49 @@
-import { createClient } from "@/lib/supabase/server";
-import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Trophy, Medal } from "lucide-react";
 import type { Metadata } from "next";
+import { Client } from "pg";
 
 export const metadata: Metadata = { title: "Ranking" };
 export const revalidate = 60;
 
-type Period = "daily" | "weekly" | "monthly" | "all_time";
-
-async function getLeaderboard(period: Period) {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("leaderboards")
-    .select("*, users(username, avatar_url)")
-    .eq("period", period)
-    .order("score", { ascending: false })
-    .limit(50);
-
-  return (data ?? []) as Array<{
-    user_id: string;
-    score: number;
-    rank: number | null;
-    users: { username: string | null; avatar_url: string | null };
-  }>;
-}
-
-const periodLabels: Record<Period, string> = {
-  daily: "Hoje",
-  weekly: "Semana",
-  monthly: "Mês",
-  all_time: "Todos os tempos",
-};
-
 const medals = ["🥇", "🥈", "🥉"];
 
-export default async function LeaderboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ period?: string }>;
-}) {
-  const { period: rawPeriod } = await searchParams;
-  const period: Period =
-    ["daily", "weekly", "monthly", "all_time"].includes(rawPeriod ?? "")
-      ? (rawPeriod as Period)
-      : "all_time";
+async function getTopScores() {
+  const client = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  try {
+    await client.connect();
+    const { rows } = await client.query(`
+      SELECT u.username, SUM(gs.score) as total_score, COUNT(*) as games
+      FROM game_sessions gs
+      JOIN app_users u ON u.id = gs.user_id
+      WHERE gs.status IN ('won','lost') AND gs.user_id IS NOT NULL
+      GROUP BY u.username
+      ORDER BY total_score DESC
+      LIMIT 50
+    `);
+    return rows as { username: string; total_score: number; games: number }[];
+  } catch {
+    return [];
+  } finally {
+    await client.end();
+  }
+}
 
-  const entries = await getLeaderboard(period);
+export default async function LeaderboardPage() {
+  const entries = await getTopScores();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      {/* Header */}
       <div className="mb-8 text-center">
         <div className="mb-2 flex items-center justify-center gap-2">
           <Trophy className="h-5 w-5 text-amber-400" />
           <Badge variant="warning">Ranking</Badge>
         </div>
         <h1 className="text-2xl font-bold text-white">Melhores jogadores</h1>
+        <p className="mt-1 text-sm text-white/40">Total de pontos acumulados</p>
       </div>
 
-      {/* Period selector */}
-      <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
-        {(Object.entries(periodLabels) as [Period, string][]).map(([p, label]) => (
-          <a
-            key={p}
-            href={`?period=${p}`}
-            className={`shrink-0 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
-              p === period
-                ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                : "text-white/50 hover:text-white border border-transparent hover:border-white/10"
-            }`}
-          >
-            {label}
-          </a>
-        ))}
-      </div>
-
-      {/* Table */}
       <Card glass>
         <CardContent className="py-4">
           {entries.length === 0 ? (
@@ -88,36 +54,29 @@ export default async function LeaderboardPage({
             <div className="space-y-1">
               {entries.map((entry, i) => (
                 <div
-                  key={entry.user_id}
+                  key={entry.username}
                   className={`flex items-center gap-3 rounded-xl px-3 py-3 transition-all ${
-                    i < 3
-                      ? "bg-white/5 border border-white/8"
-                      : "hover:bg-white/5"
+                    i < 3 ? "bg-white/5 border border-white/10" : "hover:bg-white/5"
                   }`}
                 >
                   <div className="w-8 text-center">
                     {i < 3 ? (
                       <span className="text-xl">{medals[i]}</span>
                     ) : (
-                      <span className="text-sm font-bold text-white/30">
-                        {i + 1}
-                      </span>
+                      <span className="text-sm font-bold text-white/30">{i + 1}</span>
                     )}
                   </div>
-                  <Avatar
-                    src={entry.users.avatar_url}
-                    fallback={entry.users.username ?? "?"}
-                    size="sm"
-                  />
+                  <div className="h-8 w-8 rounded-full bg-brand-500/20 flex items-center justify-center text-sm font-bold text-brand-300">
+                    {entry.username[0].toUpperCase()}
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
-                      {entry.users.username ?? "Jogador anônimo"}
-                    </p>
+                    <p className="text-sm font-medium text-white truncate">{entry.username}</p>
+                    <p className="text-xs text-white/30">{entry.games} partidas</p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Medal className="h-4 w-4 text-amber-400" />
                     <span className="font-bold text-white tabular-nums">
-                      {entry.score.toLocaleString("pt-BR")}
+                      {Number(entry.total_score).toLocaleString("pt-BR")}
                     </span>
                     <span className="text-xs text-white/30">pts</span>
                   </div>
