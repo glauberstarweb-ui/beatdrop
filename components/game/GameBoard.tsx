@@ -70,19 +70,11 @@ export function GameBoard({ song, sessionId, mode, maxAttempts, onPlayAgain, onG
         />
 
         {!gameEnded && (
-          <>
-            <GuessInput
-              onGuess={submitGuess}
-              onSkip={skipGuess}
-              disabled={gameEnded}
-            />
-            <button
-              onClick={handleReveal}
-              className="text-xs text-white/25 hover:text-white/50 transition-colors mx-auto"
-            >
-              Revelar resposta
-            </button>
-          </>
+          <GuessInput
+            onGuess={submitGuess}
+            onSkip={skipGuess}
+            disabled={gameEnded}
+          />
         )}
       </div>
 
