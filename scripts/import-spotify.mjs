@@ -3,7 +3,7 @@ import pg from "pg";
 const { Client } = pg;
 
 const db = new Client({
-  connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+  connectionString: process.env.DATABASE_URL ?? "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
 });
 
 const SEARCH_TERMS = [

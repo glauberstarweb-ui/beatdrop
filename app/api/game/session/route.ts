@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   if (!songId || !mode) return NextResponse.json({ error: "missing params" }, { status: 400 });
 
   const db = new pg.Client({
-    connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+    connectionString: process.env.DATABASE_URL,
   });
 
   try {

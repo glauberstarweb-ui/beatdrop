@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 async function getDailySong(date: string): Promise<SongWithDetails | null> {
   const db = new pg.Client({
-    connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+    connectionString: process.env.DATABASE_URL,
   });
   try {
     await db.connect();
@@ -38,7 +38,7 @@ async function getDailySong(date: string): Promise<SongWithDetails | null> {
 
 async function createSession(songId: string, date: string): Promise<string | null> {
   const db = new pg.Client({
-    connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+    connectionString: process.env.DATABASE_URL,
   });
   try {
     await db.connect();

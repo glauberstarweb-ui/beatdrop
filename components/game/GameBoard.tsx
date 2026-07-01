@@ -57,8 +57,8 @@ export function GameBoard({ song, sessionId, mode, maxAttempts, onPlayAgain, onG
           <CardContent className="flex flex-col items-center gap-6 py-8">
             <AudioPlayer
               audioUrl={song.audio_url}
-              startAt={song.preview_start}
               secondsToReveal={state.secondsRevealed}
+              attempt={state.currentAttempt}
               disabled={gameEnded}
             />
           </CardContent>

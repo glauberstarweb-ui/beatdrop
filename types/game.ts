@@ -33,7 +33,7 @@ export interface GameState {
   isPlaying: boolean;
 }
 
-export const ATTEMPT_SECONDS = [1, 2, 4, 7, 11, 16] as const;
+export const ATTEMPT_SECONDS = [1, 2, 4, 7, 11, 16, 21, 27, 30] as const;
 export const MAX_ATTEMPTS = 6;
 export const ATTEMPT_SCORES = [100, 80, 60, 40, 20, 10] as const;
 

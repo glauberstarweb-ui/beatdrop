@@ -1,54 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Music2 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+
+type Mode = "login" | "register";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
-  const supabase = createClient();
-
-  const handleMagicLink = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-    });
-    if (error) {
-      setError(error.message);
-    } else {
-      setSent(true);
-    }
-    setLoading(false);
-  };
 
-  const handleOAuth = async (provider: "google" | "discord") => {
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    const endpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
+    const body = mode === "register"
+      ? { email, username, password }
+      : { email, password };
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (!res.ok) {
+      setError(data.error ?? "Algo deu errado.");
+      return;
+    }
+
+    router.push("/daily");
+    router.refresh();
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      {/* Background */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full bg-brand-600/20 blur-[120px]" />
       </div>
 
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-brand shadow-lg shadow-brand-500/40">
@@ -57,72 +61,75 @@ export default function LoginPage() {
             <span className="text-2xl font-black text-gradient">BeatDrop</span>
           </Link>
           <p className="text-white/40 text-sm">
-            Entre para salvar seu progresso e competir no ranking
+            {mode === "login"
+              ? "Entre para salvar seu progresso e competir no ranking"
+              : "Crie sua conta gratuitamente"}
           </p>
         </div>
 
         <Card glass glow>
           <CardContent className="py-6 flex flex-col gap-4">
-            {sent ? (
-              <div className="text-center py-4">
-                <div className="text-4xl mb-3">📬</div>
-                <p className="font-semibold text-white mb-1">
-                  Verifique seu email
-                </p>
-                <p className="text-sm text-white/50">
-                  Enviamos um link mágico para <strong>{email}</strong>.
-                  Clique no link para entrar.
-                </p>
-              </div>
-            ) : (
-              <>
-                {/* OAuth */}
-                <Button
-                  variant="outline"
-                  onClick={() => handleOAuth("google")}
-                  className="w-full"
+            {/* Tabs */}
+            <div className="flex rounded-xl bg-white/5 p-1">
+              {(["login", "register"] as Mode[]).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => { setMode(m); setError(""); }}
+                  className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all ${
+                    mode === m
+                      ? "bg-brand-500 text-white shadow"
+                      : "text-white/40 hover:text-white/70"
+                  }`}
                 >
-                  <Image
-                    src="https://www.google.com/favicon.ico"
-                    alt="Google"
-                    width={16}
-                    height={16}
-                  />
-                  Continuar com Google
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => handleOAuth("discord")}
-                  className="w-full"
-                >
-                  <span className="text-indigo-400 font-bold text-lg leading-none">
-                    𝐃
-                  </span>
-                  Continuar com Discord
-                </Button>
+                  {m === "login" ? "Entrar" : "Criar conta"}
+                </button>
+              ))}
+            </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 h-px bg-white/10" />
-                  <span className="text-xs text-white/30">ou email</span>
-                  <div className="flex-1 h-px bg-white/10" />
-                </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+              <input
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/20"
+              />
 
-                {/* Magic link */}
-                <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
-                  <Input
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    error={error}
-                  />
-                  <Button type="submit" disabled={loading} className="w-full">
-                    {loading ? "Enviando…" : "Entrar com link mágico"}
-                  </Button>
-                </form>
-              </>
-            )}
+              {mode === "register" && (
+                <input
+                  type="text"
+                  placeholder="Nome de usuário"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  minLength={2}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/20"
+                />
+              )}
+
+              <input
+                type="password"
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/20"
+              />
+
+              {error && (
+                <p className="text-sm text-red-400 text-center">{error}</p>
+              )}
+
+              <Button type="submit" disabled={loading} className="w-full mt-1">
+                {loading
+                  ? "Aguarde…"
+                  : mode === "login"
+                  ? "Entrar"
+                  : "Criar conta"}
+              </Button>
+            </form>
           </CardContent>
         </Card>
 

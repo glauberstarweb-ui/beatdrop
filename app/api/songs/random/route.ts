@@ -4,10 +4,11 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const exclude = searchParams.get("exclude") ?? "";
+  const genre = searchParams.get("genre") ?? "";
   const excludeIds = exclude ? exclude.split(",").filter(Boolean) : [];
 
   const db = new pg.Client({
-    connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+    connectionString: process.env.DATABASE_URL,
   });
 
   try {
@@ -21,9 +22,10 @@ export async function GET(request: Request) {
        LEFT JOIN public.albums al ON al.id = s.album_id
        WHERE s.is_active = true
          AND ($1::uuid[] IS NULL OR s.id <> ALL($1::uuid[]))
+         AND ($2 = '' OR $2 = ANY(s.genres))
        ORDER BY random()
        LIMIT 1`,
-      [excludeIds.length > 0 ? excludeIds : null]
+      [excludeIds.length > 0 ? excludeIds : null, genre]
     );
     if (!rows[0]) return NextResponse.json(null);
     return NextResponse.json(rows[0]);

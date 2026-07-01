@@ -1,23 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useUser } from "@/hooks/useUser";
-import { Avatar } from "@/components/ui/Avatar";
-import { Button } from "@/components/ui/Button";
-import { createClient } from "@/lib/supabase/client";
 import {
-  Music2,
-  Calendar,
-  Infinity,
-  Users,
-  Trophy,
-  UserCircle,
-  LogOut,
-  Settings,
+  Music2, Calendar, Infinity, Users, Trophy, UserCircle, LogOut,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/Button";
 
 const navLinks = [
   { href: "/daily", label: "Diário", icon: Calendar },
@@ -28,9 +18,16 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { user, profile } = useUser();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me").then((r) => r.json()).then((data) => {
+      setUsername(data?.username ?? null);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -43,9 +40,10 @@ export function Navbar() {
   }, []);
 
   const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUsername(null);
+    router.push("/");
+    router.refresh();
   };
 
   return (
@@ -56,9 +54,7 @@ export function Navbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-brand">
             <Music2 className="h-4 w-4 text-white" />
           </div>
-          <span className="bg-gradient-brand bg-clip-text text-transparent">
-            BeatDrop
-          </span>
+          <span className="bg-gradient-brand bg-clip-text text-transparent">BeatDrop</span>
         </Link>
 
         {/* Nav links */}
@@ -82,42 +78,18 @@ export function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {user ? (
+          {username ? (
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 rounded-xl p-1 pr-3 hover:bg-white/5 transition-all"
+                className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-white/5 transition-all"
               >
-                <Avatar
-                  src={profile?.avatar_url}
-                  fallback={profile?.username ?? user.email ?? "U"}
-                  size="sm"
-                />
-                <span className="hidden sm:block text-sm font-medium text-white/80">
-                  {profile?.username ?? "Perfil"}
-                </span>
+                <UserCircle className="h-5 w-5 text-brand-400" />
+                <span className="hidden sm:block text-sm font-medium text-white/80">{username}</span>
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-white/10 bg-surface-800 shadow-2xl overflow-hidden animate-slide-up">
-                  <Link
-                    href="/profile"
-                    className="flex items-center gap-2 px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <UserCircle className="h-4 w-4" />
-                    Perfil
-                  </Link>
-                  {profile?.id && (
-                    <Link
-                      href="/admin"
-                      className="flex items-center gap-2 px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <Settings className="h-4 w-4" />
-                      Admin
-                    </Link>
-                  )}
+                <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-white/10 bg-surface-800 shadow-2xl overflow-hidden">
                   <div className="border-t border-white/10" />
                   <button
                     onClick={handleSignOut}
@@ -146,35 +118,23 @@ export function Navbar() {
               href={href}
               className={cn(
                 "flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 text-xs font-medium transition-all",
-                pathname === href
-                  ? "text-brand-300"
-                  : "text-white/40 hover:text-white"
+                pathname === href ? "text-brand-300" : "text-white/40 hover:text-white"
               )}
             >
               <Icon className="h-5 w-5" />
               {label}
             </Link>
           ))}
-          {user ? (
-            <Link
-              href="/profile"
-              className={cn(
-                "flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 text-xs font-medium transition-all",
-                pathname === "/profile" ? "text-brand-300" : "text-white/40"
-              )}
-            >
-              <UserCircle className="h-5 w-5" />
-              Perfil
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="flex flex-col items-center gap-0.5 text-xs font-medium text-white/40"
-            >
-              <UserCircle className="h-5 w-5" />
-              Entrar
-            </Link>
-          )}
+          <Link
+            href={username ? "/login" : "/login"}
+            className={cn(
+              "flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 text-xs font-medium transition-all",
+              "text-white/40"
+            )}
+          >
+            <UserCircle className="h-5 w-5" />
+            {username ?? "Entrar"}
+          </Link>
         </div>
       </nav>
     </header>

@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   const db = new pg.Client({
-    connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+    connectionString: process.env.DATABASE_URL,
   });
 
   try {

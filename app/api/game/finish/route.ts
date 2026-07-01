@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   const { sessionId, won, attemptsUsed, secondsRevealed, score } = await request.json();
 
   const db = new pg.Client({
-    connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+    connectionString: process.env.DATABASE_URL,
   });
 
   try {
