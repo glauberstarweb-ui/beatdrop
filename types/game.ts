@@ -21,6 +21,7 @@ export interface Guess {
   text: string;
   isCorrect: boolean;
   isSkip: boolean;
+  isArtistCorrect?: boolean;
 }
 
 export interface GameState {

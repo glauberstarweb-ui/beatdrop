@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { isCorrectGuess } from "@/lib/fuzzy";
+import { isCorrectGuess, isCorrectArtist } from "@/lib/fuzzy";
 import { recordGuess, finishGameSession } from "@/services/game";
 import {
   ATTEMPT_SECONDS,
@@ -74,12 +74,15 @@ export function useGameEngine({
 
       const correct =
         !isSkip && isCorrectGuess(guessText, song.title, song.artist_name);
+      const artistCorrect =
+        !isSkip && !correct && isCorrectArtist(guessText, song.artist_name);
 
       const newGuess: Guess = {
         attempt: state.currentAttempt,
         text: isSkip ? "" : guessText,
         isCorrect: correct,
         isSkip,
+        isArtistCorrect: artistCorrect,
       };
 
       await recordGuess(

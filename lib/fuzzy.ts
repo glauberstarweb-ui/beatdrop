@@ -20,6 +20,15 @@ export function searchSongs(query: string): SearchResult[] {
   return results.slice(0, 8).map((r) => r.item);
 }
 
+export function isCorrectArtist(guess: string, artistName: string): boolean {
+  const normalized = normalizeGuess(guess);
+  const normalizedArtist = normalizeGuess(artistName);
+  if (normalized.includes(normalizedArtist) || normalizedArtist.includes(normalized)) return true;
+  const distance = levenshtein(normalized, normalizedArtist);
+  const maxLen = Math.max(normalized.length, normalizedArtist.length);
+  return 1 - distance / maxLen >= 0.82;
+}
+
 export function isCorrectGuess(
   guess: string,
   songTitle: string,

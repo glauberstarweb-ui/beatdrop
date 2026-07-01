@@ -25,6 +25,8 @@ export function AttemptTracker({ guesses, currentAttempt }: AttemptTrackerProps)
               "flex items-center gap-3 rounded-xl px-4 py-2.5 border transition-all duration-300",
               guess?.isCorrect
                 ? "bg-emerald-500/10 border-emerald-500/30"
+                : guess?.isArtistCorrect
+                ? "bg-amber-500/10 border-amber-500/30"
                 : guess && !guess.isSkip
                 ? "bg-red-500/10 border-red-500/30"
                 : guess?.isSkip
@@ -40,6 +42,8 @@ export function AttemptTracker({ guesses, currentAttempt }: AttemptTrackerProps)
                 "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
                 guess?.isCorrect
                   ? "bg-emerald-500 text-white"
+                  : guess?.isArtistCorrect
+                  ? "bg-amber-500 text-white"
                   : guess && !guess.isSkip
                   ? "bg-red-500 text-white"
                   : guess?.isSkip
@@ -68,6 +72,8 @@ export function AttemptTracker({ guesses, currentAttempt }: AttemptTrackerProps)
                     "text-sm truncate",
                     guess.isCorrect
                       ? "text-emerald-300 font-medium"
+                      : guess.isArtistCorrect
+                      ? "text-amber-300"
                       : guess.isSkip
                       ? "text-white/30 italic"
                       : "text-red-300"
