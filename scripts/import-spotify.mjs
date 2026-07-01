@@ -59,9 +59,11 @@ async function importTracks(tracks) {
       const trackName = track.title;
       const albumName = track.album?.title;
       const coverUrl = track.album?.cover_medium ?? track.album?.cover ?? null;
-      const previewUrl = track.preview;
+      const deezerId = track.id;
 
-      if (!artistName || !trackName || !previewUrl) continue;
+      if (!artistName || !trackName || !deezerId) continue;
+
+      const previewUrl = `/api/audio/${deezerId}`;
 
       // Upsert artista
       const slug = slugify(artistName) + "-" + Math.random().toString(36).slice(2, 6);
@@ -89,10 +91,11 @@ async function importTracks(tracks) {
 
       // Inserir música
       await db.query(
-        `INSERT INTO public.songs (title, artist_id, album_id, audio_url, preview_start, duration, genres, popularity, is_active)
-         VALUES ($1, $2, $3, $4, 0, 30, '{}', $5, true)`,
+        `INSERT INTO public.songs (title, artist_id, album_id, audio_url, deezer_id, preview_start, duration, genres, popularity, is_active)
+         VALUES ($1, $2, $3, $4, $5, 0, 30, '{}', $6, true)
+         ON CONFLICT DO NOTHING`,
         [
-          trackName, artistId, albumId, previewUrl,
+          trackName, artistId, albumId, previewUrl, deezerId,
           Math.min(100, Math.max(30, Math.round((track.rank ?? 50000) / 10000))),
         ]
       );
