@@ -11,6 +11,14 @@ export async function getRandomSong(
   return data as SongWithDetails;
 }
 
+export async function getSongById(id: string): Promise<SongWithDetails | null> {
+  const res = await fetch(`/api/songs/${id}`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  if (!data || data.error) return null;
+  return data as SongWithDetails;
+}
+
 export async function searchSongsServer(
   query: string,
   limit = 8
