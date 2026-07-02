@@ -1,61 +1,13 @@
 import Link from "next/link";
+import { Calendar, Infinity as InfinityIcon, Users, Zap, Headphones, Search, ChevronRight, Trophy, Music2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { Music2, Calendar, Infinity, Users, Zap, Trophy, Star, Shield } from "lucide-react";
-
-const features = [
-  {
-    icon: Calendar,
-    title: "Modo Diário",
-    description: "Uma nova música todo dia para todos os jogadores. Compare seu resultado com o mundo.",
-    color: "text-blue-400",
-    bg: "bg-blue-500/10",
-    href: "/daily",
-  },
-  {
-    icon: Infinity,
-    title: "Modo Infinito",
-    description: "Músicas aleatórias sem fim. Treine seu ouvido e acumule pontos.",
-    color: "text-purple-400",
-    bg: "bg-purple-500/10",
-    href: "/infinite",
-  },
-  {
-    icon: Users,
-    title: "Multiplayer",
-    description: "Crie salas e compita com amigos em tempo real. Ranking ao vivo.",
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    href: "/multiplayer",
-  },
-  {
-    icon: Zap,
-    title: "Desafio",
-    description: "Gere um link e desafie seus amigos para a mesma sequência de músicas.",
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-    href: "/challenge",
-  },
-];
-
-const howItWorks = [
-  { step: "1", title: "Ouça", desc: "Toque o botão play e ouça apenas 1 segundo da música." },
-  { step: "2", title: "Adivinhe", desc: "Digite o nome da música ou artista no campo de busca." },
-  { step: "3", title: "Tente novamente", desc: "Cada erro libera mais alguns segundos. Você tem 6 tentativas." },
-  { step: "4", title: "Pontue", desc: "Quanto menos tentativas, mais pontos você ganha." },
-];
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center px-4 pt-24 pb-20 text-center overflow-hidden">
-        {/* Background glow */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[600px] rounded-full bg-brand-600/20 blur-[120px]" />
-          <div className="absolute top-20 right-1/4 h-[300px] w-[300px] rounded-full bg-purple-600/10 blur-[80px]" />
-        </div>
-
+      <section className="pt-20 pb-16 md:pt-28 md:pb-20 text-center relative overflow-hidden px-4">
+        {/* Nav */}
         <nav className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2 font-bold text-lg">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-brand">
@@ -68,106 +20,149 @@ export default function HomePage() {
           </Link>
         </nav>
 
-        <Badge className="mb-6">🎵 Novo jogo todo dia</Badge>
+        {/* SVG waveform decoration */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden="true">
+          <svg width="600" height="120" viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg" className="opacity-[0.12]">
+            {[18,32,24,44,30,50,22,48,26,54,20,46,28,52,18,42,24,50,30,44,20,38,26,48,22,42,18,36,24,46,30].map((h, i) => (
+              <rect
+                key={i}
+                x={i * 20 + 5}
+                y={(120 - h) / 2}
+                width="10"
+                height={h}
+                rx="4"
+                className="fill-brand-400"
+              />
+            ))}
+          </svg>
+        </div>
 
-        <h1 className="text-5xl sm:text-7xl font-black tracking-tight mb-6">
-          <span className="text-gradient">Adivinhe</span>
-          <br />
-          <span className="text-white">a música</span>
+        {/* Badge */}
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-500/25 bg-brand-500/10 px-3 py-1 text-xs text-brand-300 font-medium mb-6">
+          🎵 Novo jogo todo dia
+        </span>
+
+        {/* Title */}
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+          Adivinhe a <span className="text-brand-400">música</span>
         </h1>
 
-        <p className="max-w-xl text-lg text-white/60 mb-10">
-          Ouça pequenos trechos de músicas e teste seu conhecimento musical.
-          Quanto mais rápido adivinhar, mais pontos você ganha.
+        {/* Subtitle */}
+        <p className="text-base text-white/50 mb-8">
+          4 tentativas. 30 segundos. Você descobre?
         </p>
 
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link href="/daily">
-            <Button size="xl" className="rounded-2xl">
-              <Calendar className="h-5 w-5" />
-              Jogar agora
-            </Button>
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link
+            href="/daily"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-500 hover:bg-brand-400 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 active:scale-[0.97]"
+          >
+            <Calendar className="h-4 w-4" />
+            Jogar agora
           </Link>
-          <Link href="/infinite">
-            <Button size="xl" variant="outline" className="rounded-2xl">
-              <Infinity className="h-5 w-5" />
-              Modo infinito
-            </Button>
+          <Link
+            href="/infinite"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 px-6 py-3 text-sm font-medium text-white/80 hover:text-white transition-all duration-200"
+          >
+            <InfinityIcon className="h-4 w-4" />
+            Modo infinito
           </Link>
         </div>
 
         {/* Stats */}
-        <div className="mt-16 flex flex-wrap justify-center gap-8 text-center">
-          {[
-            { value: "∞", label: "Músicas" },
-            { value: "6", label: "Tentativas" },
-            { value: "100", label: "Pontos máx." },
-          ].map(({ value, label }) => (
-            <div key={label}>
-              <p className="text-3xl font-black text-gradient">{value}</p>
-              <p className="text-sm text-white/40 mt-1">{label}</p>
-            </div>
-          ))}
-        </div>
+        <p className="text-xs text-white/30 text-center mt-4">
+          1.700+ músicas · 4 tentativas · Modo infinito
+        </p>
       </section>
 
-      {/* Features */}
+      {/* Animated equalizer separator */}
+      <div className="flex items-end justify-center gap-1 h-6 mb-10 opacity-20" aria-hidden="true">
+        {[4,7,5,9,6,8,4,7,5,6,8,5].map((h, i) => (
+          <div
+            key={i}
+            style={{ height: `${h * 2}px`, animationDelay: `${i * 0.1}s` }}
+            className="w-1 rounded-full bg-brand-400 animate-[waveform_1.2s_ease-in-out_infinite]"
+          />
+        ))}
+      </div>
+
+      {/* Mode Cards */}
       <section className="px-4 pb-20">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="mb-2 text-center text-3xl font-bold text-white">Modos de jogo</h2>
-          <p className="mb-10 text-center text-white/40">
-            Escolha como quer jogar
-          </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {features.map(({ icon: Icon, title, description, color, bg, href }) => (
-              <Link key={href} href={href}>
-                <div className="group h-full rounded-2xl border border-white/8 bg-surface-700 p-5 hover:border-white/20 hover:bg-surface-600 transition-all duration-300 cursor-pointer">
-                  <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl ${bg}`}>
-                    <Icon className={`h-5 w-5 ${color}`} />
-                  </div>
-                  <h3 className="font-bold text-white mb-2">{title}</h3>
-                  <p className="text-sm text-white/50 leading-relaxed">{description}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="px-4 pb-20 bg-surface-800/50">
-        <div className="mx-auto max-w-4xl py-16">
-          <h2 className="mb-2 text-center text-3xl font-bold text-white">Como jogar</h2>
-          <p className="mb-10 text-center text-white/40">Simples assim</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {howItWorks.map(({ step, title, desc }) => (
-              <div key={step} className="flex flex-col items-center text-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-brand text-white font-black text-xl shadow-lg shadow-brand-500/30">
-                  {step}
-                </div>
-                <h3 className="font-bold text-white">{title}</h3>
-                <p className="text-sm text-white/50 leading-relaxed">{desc}</p>
+        <div className="mx-auto max-w-2xl">
+          <h2 className="mb-8 text-center text-2xl font-bold text-white">Escolha seu modo</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Diário */}
+            <div className="rounded-2xl border border-blue-500/20 bg-surface-800 p-5 hover:-translate-y-0.5 hover:border-blue-500/40 transition-all duration-200 group">
+              <div className="mb-3 inline-flex bg-blue-500/15 rounded-xl p-2.5">
+                <Calendar className="h-5 w-5 text-blue-400" />
               </div>
-            ))}
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-white">Jogo Diário</h3>
+                <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-[10px] font-medium text-blue-400">Novo hoje</span>
+              </div>
+              <p className="text-sm text-white/50 mb-3 leading-relaxed">Uma nova música todo dia. Todos jogam a mesma.</p>
+              <Link href="/daily" className="text-blue-400 text-sm hover:text-blue-300 transition-colors">
+                Jogar agora →
+              </Link>
+            </div>
+
+            {/* Infinito */}
+            <div className="rounded-2xl border border-purple-500/20 bg-surface-800 p-5 hover:-translate-y-0.5 hover:border-purple-500/40 transition-all duration-200 group">
+              <div className="mb-3 inline-flex bg-purple-500/15 rounded-xl p-2.5">
+                <InfinityIcon className="h-5 w-5 text-purple-400" />
+              </div>
+              <h3 className="font-bold text-white mb-1">Modo Infinito</h3>
+              <p className="text-sm text-white/50 mb-3 leading-relaxed">Quantas músicas quiser, sem parar. Por categoria.</p>
+              <Link href="/infinite" className="text-purple-400 text-sm hover:text-purple-300 transition-colors">
+                Começar →
+              </Link>
+            </div>
+
+            {/* Multiplayer */}
+            <div className="rounded-2xl border border-white/10 bg-surface-800 p-5 transition-all duration-200 group">
+              <div className="mb-3 inline-flex bg-white/8 rounded-xl p-2.5">
+                <Users className="h-5 w-5 text-white/30" />
+              </div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-white/40">Multijogador</h3>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium text-white/30">Em breve</span>
+              </div>
+              <p className="text-sm text-white/30 mb-3 leading-relaxed">Desafie amigos em tempo real.</p>
+              <span className="text-white/25 text-sm">Em breve</span>
+            </div>
+
+            {/* Desafio */}
+            <div className="rounded-2xl border border-amber-500/20 bg-surface-800 p-5 hover:-translate-y-0.5 hover:border-amber-500/40 transition-all duration-200 group">
+              <div className="mb-3 inline-flex bg-amber-500/15 rounded-xl p-2.5">
+                <Zap className="h-5 w-5 text-amber-400" />
+              </div>
+              <h3 className="font-bold text-white mb-1">Desafio</h3>
+              <p className="text-sm text-white/50 mb-3 leading-relaxed">Crie um desafio e mande para seus amigos.</p>
+              <span className="text-amber-400 text-sm cursor-default">Compartilhar →</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Extra features */}
-      <section className="px-4 pb-24">
-        <div className="mx-auto max-w-3xl py-16 text-center">
-          <h2 className="mb-2 text-3xl font-bold text-white">Muito mais que adivinhar</h2>
-          <p className="mb-10 text-white/40">Compete, vence, repete</p>
-          <div className="grid sm:grid-cols-3 gap-4 text-left">
+      {/* How It Works */}
+      <section className="px-4 pb-20 bg-surface-800/40 border-t border-white/5">
+        <div className="mx-auto max-w-3xl py-16">
+          <h2 className="mb-10 text-center text-2xl font-bold text-white">Como funciona</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
             {[
-              { icon: Trophy, title: "Ranking mundial", desc: "Veja onde você está no ranking global e entre amigos." },
-              { icon: Star, title: "Conquistas", desc: "Desbloqueie conquistas ao completar desafios especiais." },
-              { icon: Shield, title: "Streak diário", desc: "Mantenha sua sequência jogando todos os dias." },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="rounded-2xl border border-white/8 bg-surface-700 p-5">
-                <Icon className="h-6 w-6 text-brand-400 mb-3" />
-                <h3 className="font-bold text-white mb-1">{title}</h3>
-                <p className="text-sm text-white/50">{desc}</p>
+              { num: "1", icon: Headphones, title: "Ouça o trecho", desc: "Um pequeno pedaço da música toca" },
+              { num: "2", icon: Search, title: "Adivinhe", desc: "Digite o nome da música ou artista" },
+              { num: "3", icon: ChevronRight, title: "4 chances", desc: "A cada erro, mais tempo é revelado" },
+              { num: "4", icon: Trophy, title: "Pontuação", desc: "Acerte rápido para mais pontos" },
+            ].map(({ num, icon: Icon, title, desc }) => (
+              <div key={num} className="flex flex-col items-center text-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500/15 border border-brand-500/25 text-brand-400 font-bold text-sm">
+                  {num}
+                </div>
+                <Icon className="h-5 w-5 text-white/40" />
+                <h3 className="font-semibold text-white text-sm">{title}</h3>
+                <p className="text-xs text-white/40 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -175,23 +170,20 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="px-4 pb-24 text-center">
+      <section className="px-4 py-20 text-center bg-surface-800/40 border-t border-white/5">
         <div className="mx-auto max-w-lg">
-          <h2 className="text-4xl font-black text-white mb-4">
-            Pronto para jogar?
-          </h2>
-          <p className="text-white/50 mb-8">
-            Gratuito, sem anúncios, sem limites.
-          </p>
-          <Link href="/daily">
-            <Button size="xl" className="rounded-2xl w-full sm:w-auto">
-              Começar agora →
-            </Button>
+          <h2 className="text-2xl font-bold text-white mb-3">Pronto para jogar?</h2>
+          <p className="text-white/50 mb-8">Descubra quantas músicas você conhece.</p>
+          <Link
+            href="/daily"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-500 hover:bg-brand-400 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 active:scale-[0.97]"
+          >
+            Começar agora
           </Link>
         </div>
       </section>
 
-      <footer className="border-t border-white/5 py-8 text-center text-sm text-white/30">
+      <footer className="border-t border-white/5 py-8 text-center text-sm text-white/20">
         © 2025 BeatDrop · Feito com 🎵
       </footer>
     </div>
