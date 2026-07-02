@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 
@@ -12,6 +12,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const syne = Syne({ subsets: ["latin"], variable: "--font-syne", display: "swap" });
 
 export const metadata: Metadata = {
   title: {
@@ -50,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-surface-900 text-white min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} antialiased bg-surface-900 text-white min-h-screen`}
       >
         {children}
         <Toaster

@@ -63,4 +63,45 @@ body {
   .bg-noise {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
   }
+
+  .text-editorial {
+    font-family: var(--font-syne), system-ui, sans-serif;
+  }
+
+  .eq-bar {
+    display: inline-block;
+    width: 3px;
+    border-radius: 2px;
+    background: currentColor;
+    transform-origin: bottom;
+  }
+
+  .vinyl-groove {
+    border-radius: 9999px;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255,255,255,0.03) 0deg,
+      rgba(255,255,255,0.08) 30deg,
+      rgba(255,255,255,0.03) 60deg,
+      rgba(255,255,255,0.08) 90deg,
+      rgba(255,255,255,0.03) 120deg,
+      rgba(255,255,255,0.08) 150deg,
+      rgba(255,255,255,0.03) 180deg,
+      rgba(255,255,255,0.08) 210deg,
+      rgba(255,255,255,0.03) 240deg,
+      rgba(255,255,255,0.08) 270deg,
+      rgba(255,255,255,0.03) 300deg,
+      rgba(255,255,255,0.08) 330deg,
+      rgba(255,255,255,0.03) 360deg
+    );
+  }
+
+  .card-hover {
+    transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
 }
