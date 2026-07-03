@@ -20,6 +20,7 @@ const CATEGORIES = [
   { label: "Reggae", genre: "Reggae" },
   { label: "K-Pop", genre: "K-Pop" },
   { label: "Forró", genre: "Forró" },
+  { label: "Trap BR", genre: "Trap" },
 ];
 
 export default function InfinitePage() {

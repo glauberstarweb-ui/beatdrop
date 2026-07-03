@@ -69,6 +69,18 @@ const SEARCH_TERMS = [
   { term: "shakira", genre: "Pop" },
   { term: "gloria gaynor", genre: "R&B/Soul" },
   { term: "j balvin", genre: "Pop" },
+  { term: "veigh trap", genre: "Trap" },
+  { term: "wiu trap", genre: "Trap" },
+  { term: "xama rapper", genre: "Trap" },
+  { term: "filipe ret", genre: "Trap" },
+  { term: "borges rapper", genre: "Trap" },
+  { term: "chris mc trap", genre: "Trap" },
+  { term: "bielzin trap", genre: "Trap" },
+  { term: "vulgo fk", genre: "Trap" },
+  { term: "ryan sp trap", genre: "Trap" },
+  { term: "don l rap", genre: "Trap" },
+  { term: "orochi trap brasil", genre: "Trap" },
+  { term: "dfideliz trap", genre: "Trap" },
 ];
 
 function slugify(text) {
